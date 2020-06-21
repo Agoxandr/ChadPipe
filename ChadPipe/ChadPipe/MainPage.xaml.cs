@@ -36,6 +36,7 @@ namespace ChadPipe
             InitializeComponent();
             Login();
             targetEntry.Text = id;
+            playlistCheckBox.IsChecked = id.Contains("playlist");
         }
 
         private async void Login()
@@ -44,15 +45,10 @@ namespace ChadPipe
             {
                 CookieCollection cookieCollection = new CookieCollection
                 {
-                    new Cookie("YSC", "yg29FgfCzgY", "/", ".youtube.com"),
-                    new Cookie("SID", "tQfyL6_aWFzjWZxNiqj7wRVIIZiKrHECMzIVsiLCvpxn-XE8Fv9lqnl5X0QNQTPr_hlQOw.", "/", ".youtube.com"),
-                    new Cookie("VISITOR_INFO1_LIVE", "tzGbQ9vlfCg", "/", ".youtube.com"),
-                    new Cookie("HSID", "AVQnVZJByVIbSq8LJ", "/", ".youtube.com"),
-                    new Cookie("SSID", "ATEJKC0ONAkAdnaUq", "/", ".youtube.com"),
-                    new Cookie("APISID", "OjcOBMysdDYfqEKo/Apg5eakbYP-bA1I2l", "/", ".youtube.com"),
-                    new Cookie("SAPISID", "x9FVXe72QO-mo7fP/APNCsU03XNu50cbZK", "/", ".youtube.com"),
-                    new Cookie("SAPISID", "x9FVXe72QO-mo7fP/APNCsU03XNu50cbZK", "/", ".youtube.com"),
-                    new Cookie("LOGIN_INFO", "AFmmF2swRgIhAOLy2mXd2-IA6f0Yig7d9ure0XTABU6-t6oRoMSOGvubAiEAvBq6q5u9GMgJgiBdGftBAVdUpvZMs7r-9Br1k2xUCzI:QUQ3MjNmd3VuUHh1VHFZVDNDQXdRVmluc0w3LTYybzkxTkZvZXZhem9fcFVOZnlwUUVzUkc2R1lTOHJKTjdfUk9ueGo2dHk5MTVUV09xc2k1d29sTHhicUV6TjJJRElYdEtqTUw3VkNsVjdiZDZ5SDlVNm41Zll3dVRyalF4djVJdjhrS003aW13TVEzdnVYUGxLVWZIcHJFbUpVYkItZExHaDVYLU1LMWtjenFFYXBSc2szNTYyOF8zUXdWdzIxcWlEOGVIZk1EMThNcHJUZHJvZU4yVkYxUmhlOUtVNjdDajdyWnRvSlhQNm1jZW4tSUwtbE5xQkJmUEZIMDRDVnZKLVYzdDI3bU1IXw==", "/", ".youtube.com")
+                    new Cookie("YSC", "XfBPycRPIDA", "/", ".youtube.com"),
+                    new Cookie("VISITOR_INFO1_LIVE", "z0ESiRgYpmk", "/", ".youtube.com"),
+                    new Cookie("GPS", "1", "/", ".youtube.com"),
+                    new Cookie("CONSENT", "WP.288161", "/", ".youtube.com")
                 };
                 HttpClientHandler clientHandler = new HttpClientHandler();
                 clientHandler.CookieContainer.Add(cookieCollection);
@@ -62,7 +58,7 @@ namespace ChadPipe
                 await client.GetAsync("https://www.youtube.com/");
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    progressLabel.Text = "Youtube loaded";
+                    progressLabel.Text = "YouTube loaded";
                     downloadButton.IsEnabled = true;
                 });
             }
@@ -108,7 +104,7 @@ namespace ChadPipe
             }
         }
 
-        private async Task Download(string id, bool playlist)
+        private async Task Download(string id, bool playlist, string additionalPath = null)
         {
             cts = new CancellationTokenSource();
             try
@@ -130,10 +126,6 @@ namespace ChadPipe
                 var streamInfo = streamManifest.GetAudioOnly().WithHighestBitrate();
                 if (streamInfo != null)
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        progressLabel.Text = "Retrieved Stream info";
-                    });
                     var status = await Utils.CheckAndRequestPermissionAsync(new StorageWrite());
                     if (status != PermissionStatus.Granted)
                     {
@@ -142,7 +134,7 @@ namespace ChadPipe
                     }
                     Device.BeginInvokeOnMainThread(() =>
                     {
-                        progressLabel.Text = "Permission granted";
+                        progressLabel.Text = "Creating directory";
                     });
                     string path = DependencyService.Get<IGetPathService>().GetPath();
                     if (path == null)
@@ -150,16 +142,14 @@ namespace ChadPipe
                         Done();
                         return;
                     }
-                    Device.BeginInvokeOnMainThread(() =>
+                    string artist = video.Author;
+                    artist.Replace(" - Topic", "");
+                    StringBuilder pathStringBuilder = new StringBuilder(path).Append("/").Append(artist);
+                    if (playlist)
                     {
-                        progressLabel.Text = "Found path";
-                    });
-                    StringBuilder pathStringBuilder = new StringBuilder(path).Append("/").Append(video.Author);
+                        pathStringBuilder.Append("/").Append(additionalPath);
+                    }
                     Directory.CreateDirectory(pathStringBuilder.ToString());
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        progressLabel.Text = "Created directory";
-                    });
                     // Download the stream to file
                     await youtube.Videos.Streams.DownloadAsync(streamInfo, pathStringBuilder.Append("/").Append(video.Title.Replace('/', '-').Replace('\\', '-')).ToString(), new Progress<double>(progress => Device.BeginInvokeOnMainThread(() =>
                     {

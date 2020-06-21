@@ -6,6 +6,13 @@
              mc:Ignorable="d"
              x:Class="ChadPipe.App">
     <Application.Resources>
-
+        <ResourceDictionary>
+            <Style TargetType="{x:Type ContentPage}" ApplyToDerivedTypes="True">
+                <Setter Property="Padding" Value="10, 0" />
+            </Style>
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#380f4c" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
