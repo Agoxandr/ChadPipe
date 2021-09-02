@@ -7,7 +7,7 @@ using TextCopy;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 
-namespace ChadOilPipe
+namespace ChadPipe
 {
     public class Program
     {
