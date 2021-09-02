@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ChadPipe": {
+      "commandName": "Project",
+      "commandLineArgs": "https://music.youtube.com/playlist?list=OLAK5uy_m_3AVXpmS8Pz1JRCqgOXGcIDVreCEq2Ug"
+    }
+  }
+}
