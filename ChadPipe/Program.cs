@@ -40,12 +40,11 @@ namespace ChadOilPipe
                 }
                 OpenUrl(videos[0].Url);
                 await DownloadPlaylistAsync(url, path);
-
+                var size = "D1";
                 for (int i = 1; i <= videos.Count; i++)
                 {
-                    var artist = videos[i - 1].Author.Title;
+                    var artist = (videos[i - 1].Author.Title).Replace(" - Topic", "");
                     var title = videos[i - 1].Title;
-                    var size = "D1";
                     if (videos.Count > 9)
                     {
                         size = "D2";
@@ -74,7 +73,7 @@ namespace ChadOilPipe
                 }
                 for (int i = 1; i <= videos.Count; i++)
                 {
-                    File.Delete(path + "/" + i + ".webm");
+                    File.Delete(path + "/" + i.ToString(size) + ".webm");
                 }
                 File.Delete(cover);
             }
