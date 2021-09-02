@@ -45,9 +45,21 @@ namespace ChadOilPipe
                 {
                     var artist = videos[i - 1].Author.Title;
                     var title = videos[i - 1].Title;
-
-                    var song = path + "/" + i + ".webm";
-                    var fullPath = new StringBuilder(path).Append('/').Append(i.ToString("D3")).Append(' ').Append(SanitizeFolderName(title)).Append(".mp3").ToString();
+                    var size = "D1";
+                    if (videos.Count > 9)
+                    {
+                        size = "D2";
+                    }
+                    else if (videos.Count > 99)
+                    {
+                        size = "D3";
+                    }
+                    else if (videos.Count > 999)
+                    {
+                        size = "D4";
+                    }
+                    var song = path + "/" + i.ToString(size) + ".webm";
+                    var fullPath = new StringBuilder(path).Append('/').Append(i.ToString(size)).Append(' ').Append(SanitizeFolderName(title)).Append(".mp3").ToString();
                     var arguments = new string[] { "-i", song, "-i", cover, "-map", "0:0", "-map", "1:0", "-b:a", "160k", "-id3v2_version", "3", "-metadata:s:v", "title=\"Cover\"", "-metadata:s:v", "comment=\"Cover (front)\"", fullPath };
                     var process = CreateProcess("ffmpeg", arguments);
                     process.Start();
