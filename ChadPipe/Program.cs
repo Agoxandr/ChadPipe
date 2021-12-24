@@ -1,8 +1,11 @@
 ﻿using LibVLCSharp.Shared;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TextCopy;
 using YoutubeExplode;
 using YoutubeExplode.Common;
@@ -38,7 +41,6 @@ namespace ChadPipe
                 {
                     await CreateCoverAsync(videos[0].Url, path);
                 }
-                OpenUrl(videos[0].Url);
                 await DownloadPlaylistAsync(url, path);
                 var size = "D1";
                 for (int i = 1; i <= videos.Count; i++)
